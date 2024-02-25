@@ -37,7 +37,7 @@ export function initDB({ name, version, objectStoresMeta }: IndexedDBProps) {
   CreateObjectStore(name, version, objectStoresMeta);
 }
 
-export function useIndexedDB(objectStore: string): {
+export function useIndexedDB(objectStore: string): Partial<{
   add: <T = any>(value: T, key?: any) => Promise<number>;
   getByID: <T = any>(id: number | string) => Promise<T>;
   getAll: <T = any>() => Promise<T[]>;
@@ -49,8 +49,8 @@ export function useIndexedDB(objectStore: string): {
   ) => Promise<void>;
   getByIndex: (indexName: string, key: any) => Promise<any>;
   clear: () => Promise<any>;
-} {
-  if (!indexeddbConfiguration.name || !indexeddbConfiguration.version && typeof window !== "undefined") {
+}> {
+  if ((!indexeddbConfiguration.name || !indexeddbConfiguration.version) && typeof window !== "undefined") {
     throw new Error("Please, initialize the DB before the use.");
   }
   return useMemo(

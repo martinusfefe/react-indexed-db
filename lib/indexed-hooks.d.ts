@@ -27,7 +27,7 @@ export interface useIndexedDB {
     objectStore: string;
 }
 export declare function initDB({ name, version, objectStoresMeta }: IndexedDBProps): void;
-export declare function useIndexedDB(objectStore: string): {
+export declare function useIndexedDB(objectStore: string): Partial<{
     add: <T = any>(value: T, key?: any) => Promise<number>;
     getByID: <T = any>(id: number | string) => Promise<T>;
     getAll: <T = any>() => Promise<T[]>;
@@ -36,4 +36,4 @@ export declare function useIndexedDB(objectStore: string): {
     openCursor: (cursorCallback: (event: Event) => void, keyRange?: IDBKeyRange) => Promise<void>;
     getByIndex: (indexName: string, key: any) => Promise<any>;
     clear: () => Promise<any>;
-};
+}>;
