@@ -50,16 +50,12 @@ export function useIndexedDB(objectStore: string): {
   getByIndex: (indexName: string, key: any) => Promise<any>;
   clear: () => Promise<any>;
 } {
-  if (!indexeddbConfiguration.name || !indexeddbConfiguration.version) {
+  if (!indexeddbConfiguration.name || !indexeddbConfiguration.version && typeof window !== "undefined") {
     throw new Error("Please, initialize the DB before the use.");
   }
   return useMemo(
     () =>
-      DBOperations(
-        indexeddbConfiguration.name,
-        indexeddbConfiguration.version,
-        objectStore,
-      ),
+      typeof window !== "undefined" ? DBOperations(indexeddbConfiguration.name, indexeddbConfiguration.version, objectStore) : null,
     [indexeddbConfiguration, objectStore],
   );
 }
