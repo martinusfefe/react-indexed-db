@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { validateBeforeTransaction } from "./Utils";
 import { ObjectStoreMeta, ObjectStoreSchema } from "./indexed-hooks";
 import { createReadwriteTransaction } from "./createReadwriteTransaction";
@@ -15,11 +14,14 @@ export interface IndexDetails {
   indexName: string;
   order: string;
 }
-const indexedDB: IDBFactory =
-  window.indexedDB ||
-  (<any>window).mozIndexedDB ||
-  (<any>window).webkitIndexedDB ||
-  (<any>window).msIndexedDB;
+const indexedDB: Partial<IDBFactory> =
+  typeof window === "undefined" ? 
+  {} : (
+    window.indexedDB ||
+    (<any>window).mozIndexedDB ||
+    (<any>window).webkitIndexedDB ||
+    (<any>window).msIndexedDB
+  );
 
 export function openDatabase(
   dbName: string,
@@ -27,7 +29,10 @@ export function openDatabase(
   upgradeCallback?: (e: Event, db: IDBDatabase) => void,
 ) {
   return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(dbName, version);
+    if (!Object.keys(indexedDB)) {
+      reject("IndexedDB not supported in this environment");
+    }
+    const request = indexedDB?.open(dbName, version);
     let db: IDBDatabase;
     request.onsuccess = () => {
       db = request.result;
@@ -49,7 +54,10 @@ export function CreateObjectStore(
   version: number,
   storeSchemas: ObjectStoreMeta[],
 ) {
-  const request: IDBOpenDBRequest = indexedDB.open(dbName, version);
+  if (!Object.keys(indexedDB)) {
+    throw new Error("IndexedDB not supported in this environment");
+  }
+  const request: IDBOpenDBRequest = indexedDB?.open(dbName, version);
 
   request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
     const database: IDBDatabase = (event.target as any).result;
